@@ -1,0 +1,5 @@
+{
+  "disablePermissionRequestHook": false,
+  "disableStopHook": false,
+  "disableLogging": true
+}

@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "PROJECT_ROOT=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; python3 \"$PROJECT_ROOT/.codex/hooks/scripts/hooks.py\" --hook PermissionRequest",
+            "timeout": 10,
+            "statusMessage": "Running permission request hook"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "PROJECT_ROOT=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; python3 \"$PROJECT_ROOT/.codex/hooks/scripts/hooks.py\" --hook Stop",
+            "timeout": 10,
+            "statusMessage": "Running session stop hook"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+.codex/hooks/config/hooks-config.local.json
+.codex/hooks/logs/*
+!.codex/hooks/logs/.gitkeep
+
+.DS_Store
+__pycache__/
+*.py[cod]
