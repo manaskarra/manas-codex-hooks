@@ -1,5 +1,7 @@
 {
   "disablePermissionRequestHook": false,
   "disableStopHook": false,
-  "disableLogging": true
+  "disableLogging": true,
+  "volume": 0.35,
+  "stopMaxSeconds": 2
 }

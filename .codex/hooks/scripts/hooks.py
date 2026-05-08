@@ -27,6 +27,11 @@ HOOK_CONFIG_MAP = {
     "Stop": "disableStopHook",
 }
 
+HOOK_DURATION_CONFIG_MAP = {
+    "PermissionRequest": "permissionRequestMaxSeconds",
+    "Stop": "stopMaxSeconds",
+}
+
 
 def hooks_dir() -> Path:
     return Path(__file__).resolve().parent.parent
@@ -77,7 +82,20 @@ def audio_player() -> list[str] | None:
     return None
 
 
-def play_sound(sound_name: str) -> None:
+def config_float(config: dict[str, object], key: str, default: float | None = None) -> float | None:
+    value = config.get(key, default)
+    if value is None:
+        return None
+
+    try:
+        parsed = float(value)
+    except (TypeError, ValueError):
+        return default
+
+    return parsed if parsed > 0 else default
+
+
+def play_sound(sound_name: str, config: dict[str, object]) -> None:
     if "/" in sound_name or "\\" in sound_name or ".." in sound_name:
         return
 
@@ -89,13 +107,23 @@ def play_sound(sound_name: str) -> None:
     if not sound_path.exists():
         return
 
+    volume = config_float(config, "volume", 0.35)
+    max_seconds = config_float(config, HOOK_DURATION_CONFIG_MAP.get(sound_name, ""), None)
+
     try:
         if player[0] == "WINDOWS":
             winsound.PlaySound(str(sound_path), winsound.SND_FILENAME | winsound.SND_NODEFAULT)
             return
 
+        command = [*player]
+        if player[0] == "afplay":
+            if volume is not None:
+                command.extend(["-v", str(volume)])
+            if max_seconds is not None:
+                command.extend(["-t", str(max_seconds)])
+
         subprocess.Popen(
-            [*player, str(sound_path)],
+            [*command, str(sound_path)],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             start_new_session=True,
@@ -147,7 +175,7 @@ def main() -> int:
     if config.get(HOOK_CONFIG_MAP[args.hook], False):
         return 0
 
-    play_sound(HOOK_SOUND_MAP[args.hook])
+    play_sound(HOOK_SOUND_MAP[args.hook], config)
     return 0
 
 
